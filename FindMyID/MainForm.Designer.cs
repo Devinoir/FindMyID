@@ -29,6 +29,7 @@ namespace FindMyID
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tbPath = new System.Windows.Forms.TextBox();
             this.btnOpenDoc = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
@@ -68,7 +69,7 @@ namespace FindMyID
             // 
             // tbRegex
             // 
-            this.tbRegex.Location = new System.Drawing.Point(105, 119);
+            this.tbRegex.Location = new System.Drawing.Point(12, 136);
             this.tbRegex.Name = "tbRegex";
             this.tbRegex.Size = new System.Drawing.Size(473, 23);
             this.tbRegex.TabIndex = 3;
@@ -84,6 +85,7 @@ namespace FindMyID
             this.Controls.Add(this.btnStart);
             this.Controls.Add(this.btnOpenDoc);
             this.Controls.Add(this.tbPath);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "FindMyID";
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.MainForm_DragDrop);

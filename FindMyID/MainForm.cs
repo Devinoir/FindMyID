@@ -58,7 +58,7 @@ namespace FindMyID
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            foreach (var item in documentHandler.ReadFile(tbPath.Text, tbRegex.Text))
+            foreach (var item in documentHandler.processData(tbPath.Text, tbRegex.Text))
             {
                 MessageBox.Show(item);
             }
