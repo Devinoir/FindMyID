@@ -1,49 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace FindMyID
 {
     class DocumentHandler
     {
-        public List<string> processData(string path, string rx)
+        public List<string> ProcessData(string path, string rx)
         {
             //Find IDs by Regex
-            List<string> IDList = new List<string>();
-            List<string> processedData = new List<string>();
-            if (!String.IsNullOrEmpty(path))
+            rx = "(\\w*\\W*){3}" + rx + "(\\W*\\w*){3}";
+            try
             {
                 string text = System.IO.File.ReadAllText(path);
                 text = text.Replace("\r\n", " ");
-                text = Regex.Replace(text, @"[^\w\s]", " ");
-                string[] words = text.Split(" ");
-                words = CleanEmptyElements(words, "");
-                for (int i = 0; i < words.Length; i++)
-                {
-                    if (Regex.IsMatch(words[i], rx))
-                    {
-                        for (int j = 0; j < i; j++)
-                        {
-                            if (j > 4)
-                                break;
-                            IDList.Add(words[i - j]);
-                        }
-                        IDList.Reverse();
-                        processedData.Add(string.Join(" ", IDList));
-                        IDList.Clear();
-                    }
-                }
-                return processedData;
+                //text = Regex.Replace(text, @"[^\w\s]", " ");
+                return Regex.Matches(text, rx).Cast<Match>().Select(m => m.Value).ToList();
             }
-            else
+            catch (Exception e)
             {
-                System.Windows.Forms.MessageBox.Show("Es wurde kein korrekter Pfad angegeben.");
-                return null;
+                switch (e.GetType().FullName)
+                {
+                    case "System.IO.FileNotFoundException":
+                        MessageBox.Show("Das Dokument konnte unter dem angegebenen Pfad nicht gefunden werden.");
+                        break;
+                    case "System.ArgumentException":
+                        MessageBox.Show("Bitte geben Sie den Pfad zum Dokument an.");
+                        break;
+                    default:
+                        MessageBox.Show(e.GetType().FullName);
+                        break;
+                }
             }
+            return null;
         }
 
-        private string[] CleanEmptyElements(string[] elements, string toClean)
+        private List<string> CleanEmptyElements(List<string> elements, string toClean)
         {
             List<string> list = new List<string>(elements);
             for (int i = 0; i < list.Count; i++)
@@ -53,7 +48,7 @@ namespace FindMyID
                     list.RemoveAt(i);
                 }
             }
-            return list.ToArray();
+            return list;
         }
     }
 }

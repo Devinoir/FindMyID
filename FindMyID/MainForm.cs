@@ -58,11 +58,18 @@ namespace FindMyID
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            foreach (var item in documentHandler.processData(tbPath.Text, tbRegex.Text))
+            List<string> processedData = documentHandler.ProcessData(tbPath.Text, tbRegex.Text);
+            if (processedData.Count == 0)
             {
-                MessageBox.Show(item);
+                MessageBox.Show("Es konnten keine passenden IDs gefunden werden.");
             }
-            
+            if (processedData != null)
+            {
+                foreach (var item in documentHandler.ProcessData(tbPath.Text, tbRegex.Text))
+                {
+                    MessageBox.Show(item);
+                }
+            }
         }
     }
 }
