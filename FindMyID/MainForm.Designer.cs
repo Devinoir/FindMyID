@@ -34,6 +34,7 @@ namespace FindMyID
             this.btnOpenDoc = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.tbRegex = new System.Windows.Forms.TextBox();
+            this.btnCreateTrainingData = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // tbPath
@@ -75,12 +76,23 @@ namespace FindMyID
             this.tbRegex.TabIndex = 3;
             this.tbRegex.Text = "[A-Z]0[1-9]{6}";
             // 
+            // btnCreateTrainingData
+            // 
+            this.btnCreateTrainingData.Location = new System.Drawing.Point(212, 328);
+            this.btnCreateTrainingData.Name = "btnCreateTrainingData";
+            this.btnCreateTrainingData.Size = new System.Drawing.Size(75, 23);
+            this.btnCreateTrainingData.TabIndex = 4;
+            this.btnCreateTrainingData.Text = "Testdaten erstellen";
+            this.btnCreateTrainingData.UseVisualStyleBackColor = true;
+            this.btnCreateTrainingData.Click += new System.EventHandler(this.btnCreateTrainingData_Click);
+            // 
             // MainForm
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 561);
+            this.Controls.Add(this.btnCreateTrainingData);
             this.Controls.Add(this.tbRegex);
             this.Controls.Add(this.btnStart);
             this.Controls.Add(this.btnOpenDoc);
@@ -101,6 +113,7 @@ namespace FindMyID
         private System.Windows.Forms.Button btnOpenDoc;
         private System.Windows.Forms.Button btnStart;
         private System.Windows.Forms.TextBox tbRegex;
+        private System.Windows.Forms.Button btnCreateTrainingData;
     }
 }
 

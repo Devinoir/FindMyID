@@ -4,6 +4,7 @@ using System.Text;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using System.IO;
 
 namespace FindMyID
 {
@@ -18,6 +19,7 @@ namespace FindMyID
                 string text = System.IO.File.ReadAllText(path);
                 text = text.Replace("\r\n", " ");
                 //text = Regex.Replace(text, @"[^\w\s]", " ");
+                text.Split("");
                 return Regex.Matches(text, rx).Cast<Match>().Select(m => m.Value).ToList();
             }
             catch (Exception e)
@@ -36,6 +38,12 @@ namespace FindMyID
                 }
             }
             return null;
+        }
+
+        public List<string> CreateTrainingData(List<string> data)
+        {
+            File.WriteAllLines("TrainingData.txt", data);
+            return data;
         }
 
         private List<string> CleanEmptyElements(List<string> elements, string toClean)

@@ -71,5 +71,10 @@ namespace FindMyID
                 }
             }
         }
+
+        private void btnCreateTrainingData_Click(object sender, EventArgs e)
+        {
+            documentHandler.CreateTrainingData(documentHandler.ProcessData(tbPath.Text, tbRegex.Text));
+        }
     }
 }
