@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace FindMyID
 {
@@ -58,17 +59,25 @@ namespace FindMyID
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            List<string> processedData = documentHandler.ProcessData(tbPath.Text, tbRegex.Text);
-            if (processedData.Count == 0)
+            if (System.IO.Path.GetExtension(tbPath.Text) == ".txt")
             {
-                MessageBox.Show("Es konnten keine passenden IDs gefunden werden.");
-            }
-            if (processedData != null)
-            {
-                foreach (var item in documentHandler.ProcessData(tbPath.Text, tbRegex.Text))
+                List<string> processedData = documentHandler.ProcessData(tbPath.Text, tbRegex.Text);
+                if (processedData != null)
                 {
-                    MessageBox.Show(item);
+                    foreach (var item in documentHandler.ProcessData(tbPath.Text, tbRegex.Text))
+                    {
+                        MessageBox.Show(item);
+                    }
+
+                    if (processedData.Count == 0)
+                    {
+                        MessageBox.Show("Es konnten keine passenden IDs gefunden werden.");
+                    }
                 }
+            }
+            else
+            {
+                MessageBox.Show("Dateien vom Typen \"" + System.IO.Path.GetExtension(tbPath.Text) + "\" werden nicht unterstützt");
             }
         }
 

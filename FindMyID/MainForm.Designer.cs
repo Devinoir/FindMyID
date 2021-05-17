@@ -44,7 +44,7 @@ namespace FindMyID
             this.tbPath.Name = "tbPath";
             this.tbPath.Size = new System.Drawing.Size(667, 23);
             this.tbPath.TabIndex = 0;
-            this.tbPath.Text = "C:\\Users\\devin\\Documents\\TestMail.txt";
+            this.tbPath.Text = "C:\\Users\\neugebauer\\Desktop\\testmail.txt";
             this.tbPath.DragDrop += new System.Windows.Forms.DragEventHandler(this.tbPath_DragDrop);
             this.tbPath.DragOver += new System.Windows.Forms.DragEventHandler(this.tbPath_DragOver);
             // 

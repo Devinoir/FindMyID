@@ -10,17 +10,34 @@ namespace FindMyID
 {
     class DocumentHandler
     {
-        public List<string> ProcessData(string path, string rx)
+        public List<string> ProcessData(string path, string rxInput)
         {
             //Find IDs by Regex
-            rx = "(\\w*\\W*){3}" + rx + "(\\W*\\w*){3}";
+            string rx = "(\\w*\\W*){5}" + rxInput + "(\\W*\\w*){5}";
             try
             {
-                string text = System.IO.File.ReadAllText(path);
-                text = text.Replace("\r\n", " ");
-                //text = Regex.Replace(text, @"[^\w\s]", " ");
-                text.Split("");
-                return Regex.Matches(text, rx).Cast<Match>().Select(m => m.Value).ToList();
+                List<string> rawDataSet = new List<string>();
+                List<string> processedDataSet= new List<string>();
+                //Split input into Sentences
+                List<string> sentences = Regex.Split(System.IO.File.ReadAllText(path).Replace("\r\n", " "), @"(?<=[\.!\?])\s+").ToList();
+                foreach (var sentence in sentences)
+                {
+                    rawDataSet.AddRange(Regex.Matches(sentence, rx).Cast<Match>().Select(m => m.Value).ToList());
+                }
+
+                foreach (var item in rawDataSet)
+                {
+                    if (Regex.IsMatch(item, rxInput + " "))
+                    {
+                        processedDataSet.Add(Regex.Replace(item, rxInput + " ", ""));
+                    }
+                    else
+                    {
+                        processedDataSet.Add(Regex.Replace(item, rxInput, ""));
+                    }
+                }
+
+                return processedDataSet;
             }
             catch (Exception e)
             {
@@ -44,6 +61,11 @@ namespace FindMyID
         {
             File.WriteAllLines("TrainingData.txt", data);
             return data;
+        }
+
+        private List<string> SentenceSplit(string text)
+        {
+            return Regex.Split(text, @"(?<=[\.!\?])\s+").ToList();
         }
 
         private List<string> CleanEmptyElements(List<string> elements, string toClean)
