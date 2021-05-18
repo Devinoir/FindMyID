@@ -13,7 +13,7 @@ namespace FindMyID
         public List<string> ProcessData(string path, string rx)
         {
             //Find IDs by Regex
-            rx = "(\\w*\\W*){3}" + rx + "(\\W*\\w*){3}";
+            rx = "(\\w*\\W*){4}" + rx + "(\\W*\\w*){4}";
             try
             {
                 string text = System.IO.File.ReadAllText(path);
