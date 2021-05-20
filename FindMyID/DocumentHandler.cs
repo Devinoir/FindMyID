@@ -39,20 +39,17 @@ namespace FindMyID
 
                 return processedDataSet;
             }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show("Das Dokument konnte unter dem angegebenen Pfad nicht gefunden werden.");
+            }
+            catch (ArgumentException)
+            {
+                MessageBox.Show("Bitte geben Sie den Pfad zum Dokument an.");
+            }
             catch (Exception e)
             {
-                switch (e.GetType().FullName)
-                {
-                    case "System.IO.FileNotFoundException":
-                        MessageBox.Show("Das Dokument konnte unter dem angegebenen Pfad nicht gefunden werden.");
-                        break;
-                    case "System.ArgumentException":
-                        MessageBox.Show("Bitte geben Sie den Pfad zum Dokument an.");
-                        break;
-                    default:
-                        MessageBox.Show(e.GetType().FullName);
-                        break;
-                }
+                MessageBox.Show(e.ToString());
             }
             return null;
         }
