@@ -5,45 +5,77 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.IO;
+using FindMyIDML.Model;
 
 namespace FindMyID
 {
     class DocumentHandler
     {
-        public List<string> ProcessData(string path, string rx)
+        public Dictionary<string, string> ProcessData(string path, string rxInput)
         {
+            //init progressBar
+            ProgressBar progressBar = Application.OpenForms["MainForm"].Controls["progressBar"] as ProgressBar;
             //Find IDs by Regex
-            rx = "(\\w*\\W*){4}" + rx + "(\\W*\\w*){4}";
+            string rx = "(\\w*\\W*){5}" + rxInput + "(\\W*\\w*){5}";
             try
             {
-                string text = System.IO.File.ReadAllText(path);
-                text = text.Replace("\r\n", " ");
-                //text = Regex.Replace(text, @"[^\w\s]", " ");
-                text.Split("");
-                return Regex.Matches(text, rx).Cast<Match>().Select(m => m.Value).ToList();
+                Dictionary<string, string> dataMap = new Dictionary<string, string>();
+                List<string> rawDataSet = new List<string>();
+                //Split input into Sentences
+                List<string> sentences = Regex.Split(System.IO.File.ReadAllText(path).Replace("\r\n", " "), @"(?<=[\.!\?])\s+").ToList();
+                foreach (var sentence in sentences)
+                {
+                    //Strip sentence of all punctuation
+                    string stripped = new string(sentence.ToCharArray().Where(c => !char.IsPunctuation(c)).ToArray());
+                    rawDataSet.AddRange(Regex.Matches(stripped, rx).Cast<Match>().Select(m => m.Value).ToList());
+                }
+                progressBar.Value = 50;
+                //Filter IDs
+                foreach (var item in rawDataSet)
+                {
+                    if (Regex.IsMatch(item, rxInput + " "))
+                    {
+                        dataMap.Add(Regex.Match(item, rxInput + " ").Value, Regex.Replace(item, rxInput + " ",""));
+                    }
+                    else
+                    {
+                        dataMap.Add(Regex.Match(item, rxInput).Value, Regex.Replace(item, rxInput, "")); ;
+                    }
+                }
+                progressBar.Value = 100;
+                return dataMap;
+            }
+            catch (FileNotFoundException)
+            {
+                MessageBox.Show("Das Dokument konnte unter dem angegebenen Pfad nicht gefunden werden.");
+            }
+            catch (ArgumentException e)
+            {
+                MessageBox.Show(e.ToString());
             }
             catch (Exception e)
             {
-                switch (e.GetType().FullName)
-                {
-                    case "System.IO.FileNotFoundException":
-                        MessageBox.Show("Das Dokument konnte unter dem angegebenen Pfad nicht gefunden werden.");
-                        break;
-                    case "System.ArgumentException":
-                        MessageBox.Show("Bitte geben Sie den Pfad zum Dokument an.");
-                        break;
-                    default:
-                        MessageBox.Show(e.GetType().FullName);
-                        break;
-                }
+                MessageBox.Show(e.ToString());
             }
             return null;
         }
 
-        public List<string> CreateTrainingData(List<string> data)
+        public List<string> CreateTrainingData(Dictionary<string, string> data)
         {
-            File.WriteAllLines("TrainingData.txt", data);
-            return data;
+            File.WriteAllLines("TrainingData.txt", data.Values);
+            return data.Values.ToList();
+        }
+
+        public ModelOutput PredictSubjectID(string checkValue)
+        {
+            var input = new ModelInput()
+            {
+                Col0 = checkValue
+            };
+
+            // Load model and predict output of sample data
+
+            return ConsumeModel.Predict(input);
         }
 
         private List<string> CleanEmptyElements(List<string> elements, string toClean)

@@ -7,4 +7,8 @@
     <ApplicationIcon>FindMyID.ico</ApplicationIcon>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FindMyIDML.Model\FindMyIDML.Model.csproj" />
+  </ItemGroup>
+
 </Project>
