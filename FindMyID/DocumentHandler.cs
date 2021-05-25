@@ -5,47 +5,53 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.IO;
+using FindMyIDML.Model;
 
 namespace FindMyID
 {
     class DocumentHandler
     {
-        public List<string> ProcessData(string path, string rxInput)
+        public Dictionary<string, string> ProcessData(string path, string rxInput)
         {
+            //init progressBar
+            ProgressBar progressBar = Application.OpenForms["MainForm"].Controls["progressBar"] as ProgressBar;
             //Find IDs by Regex
             string rx = "(\\w*\\W*){5}" + rxInput + "(\\W*\\w*){5}";
             try
             {
+                Dictionary<string, string> dataMap = new Dictionary<string, string>();
                 List<string> rawDataSet = new List<string>();
-                List<string> processedDataSet= new List<string>();
                 //Split input into Sentences
                 List<string> sentences = Regex.Split(System.IO.File.ReadAllText(path).Replace("\r\n", " "), @"(?<=[\.!\?])\s+").ToList();
                 foreach (var sentence in sentences)
                 {
-                    rawDataSet.AddRange(Regex.Matches(sentence, rx).Cast<Match>().Select(m => m.Value).ToList());
+                    //Strip sentence of all punctuation
+                    string stripped = new string(sentence.ToCharArray().Where(c => !char.IsPunctuation(c)).ToArray());
+                    rawDataSet.AddRange(Regex.Matches(stripped, rx).Cast<Match>().Select(m => m.Value).ToList());
                 }
-
+                progressBar.Value = 50;
+                //Filter IDs
                 foreach (var item in rawDataSet)
                 {
                     if (Regex.IsMatch(item, rxInput + " "))
                     {
-                        processedDataSet.Add(Regex.Replace(item, rxInput + " ", ""));
+                        dataMap.Add(Regex.Match(item, rxInput + " ").Value, Regex.Replace(item, rxInput + " ",""));
                     }
                     else
                     {
-                        processedDataSet.Add(Regex.Replace(item, rxInput, ""));
+                        dataMap.Add(Regex.Match(item, rxInput).Value, Regex.Replace(item, rxInput, "")); ;
                     }
                 }
-
-                return processedDataSet;
+                progressBar.Value = 100;
+                return dataMap;
             }
             catch (FileNotFoundException)
             {
                 MessageBox.Show("Das Dokument konnte unter dem angegebenen Pfad nicht gefunden werden.");
             }
-            catch (ArgumentException)
+            catch (ArgumentException e)
             {
-                MessageBox.Show("Bitte geben Sie den Pfad zum Dokument an.");
+                MessageBox.Show(e.ToString());
             }
             catch (Exception e)
             {
@@ -54,15 +60,22 @@ namespace FindMyID
             return null;
         }
 
-        public List<string> CreateTrainingData(List<string> data)
+        public List<string> CreateTrainingData(Dictionary<string, string> data)
         {
-            File.WriteAllLines("TrainingData.txt", data);
-            return data;
+            File.WriteAllLines("TrainingData.txt", data.Values);
+            return data.Values.ToList();
         }
 
-        private List<string> SentenceSplit(string text)
+        public ModelOutput PredictSubjectID(string checkValue)
         {
-            return Regex.Split(text, @"(?<=[\.!\?])\s+").ToList();
+            var input = new ModelInput()
+            {
+                Col0 = checkValue
+            };
+
+            // Load model and predict output of sample data
+
+            return ConsumeModel.Predict(input);
         }
 
         private List<string> CleanEmptyElements(List<string> elements, string toClean)

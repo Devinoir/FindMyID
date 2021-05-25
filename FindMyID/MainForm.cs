@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Diagnostics;
 
 namespace FindMyID
 {
@@ -59,31 +60,57 @@ namespace FindMyID
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            if (System.IO.Path.GetExtension(tbPath.Text) == ".txt")
+            //Check if Path is Valid
+            if (tbPath.Text != "" || !Uri.IsWellFormedUriString(tbPath.Text, UriKind.Absolute))
             {
-                List<string> processedData = documentHandler.ProcessData(tbPath.Text, tbRegex.Text);
-                if (processedData != null)
+                //Check if the extension is correct
+                if (System.IO.Path.GetExtension(tbPath.Text) == ".txt")
                 {
-                    foreach (var item in documentHandler.ProcessData(tbPath.Text, tbRegex.Text))
+                    progressBar.Value = 10;
+                    Dictionary<string, string> processedData = documentHandler.ProcessData(tbPath.Text, tbRegex.Text);
+                    if (processedData != null)
                     {
-                        MessageBox.Show(item);
-                    }
+                        foreach (var item in documentHandler.ProcessData(tbPath.Text, tbRegex.Text))
+                        {
+                            FindMyIDML.Model.ModelOutput result = documentHandler.PredictSubjectID(item.Value);
+                            if (documentHandler.PredictSubjectID(item.Value).Prediction == "1")
+                            {
+                                MessageBox.Show($"Es geht mit einer Wahrscheinlichkeit von {result.Score[0] * 100}% um {item.Key}.");
+                            };
+                        }
 
-                    if (processedData.Count == 0)
-                    {
-                        MessageBox.Show("Es konnten keine passenden IDs gefunden werden.");
+                        if (processedData.Count == 0)
+                        {
+                            MessageBox.Show("Es konnten keine passenden IDs gefunden werden.");
+                        }
                     }
+                    progressBar.Value = 100;
+                }
+                else
+                {
+                    MessageBox.Show("Dateien vom Typen \"" + System.IO.Path.GetExtension(tbPath.Text) + "\" werden nicht unterstützt");
                 }
             }
             else
             {
-                MessageBox.Show("Dateien vom Typen \"" + System.IO.Path.GetExtension(tbPath.Text) + "\" werden nicht unterstützt");
+                MessageBox.Show("Die Datei konnte nicht gefunden werden.");
             }
         }
 
         private void btnCreateTrainingData_Click(object sender, EventArgs e)
         {
             documentHandler.CreateTrainingData(documentHandler.ProcessData(tbPath.Text, tbRegex.Text));
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            //Workaround for current .net Core issue
+            ProcessStartInfo psi = new ProcessStartInfo
+            {
+                FileName = "https://regexr.com/",
+                UseShellExecute = true
+            };
+            Process.Start(psi);
         }
     }
 }
