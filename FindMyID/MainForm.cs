@@ -10,29 +10,40 @@ using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Diagnostics;
+using static System.IO.Path;
+using FindMyIDML.Core;
 
 namespace FindMyID
 {
     public partial class MainForm : Form
     {
+        private readonly DocumentHandler documentHandler;
         public MainForm()
         {
             InitializeComponent();
+            documentHandler = new DocumentHandler();
+            documentHandler.OnProgressChange += DocumentHandler_OnProgressChange;
+
         }
-        DocumentHandler documentHandler = new DocumentHandler();
+
+        private void DocumentHandler_OnProgressChange(object sender, int val)
+        {
+            progressBar.Value = val;
+        }
+
         public string Path { get { return tbPath.Text; } }
 
+        //open file dialog and insert path into text box
         private void btnOpenDoc_Click(object sender, EventArgs e)
         {
-            using (OpenFileDialog dialog = new OpenFileDialog())
+            using OpenFileDialog dialog = new OpenFileDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
-                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    tbPath.Text = dialog.FileName;
-                }
+                tbPath.Text = dialog.FileName;
             }
         }
 
+        //change cursor
         private void tbPath_DragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -41,6 +52,7 @@ namespace FindMyID
                 e.Effect = DragDropEffects.None;
         }
 
+        //inset path on drop
         private void tbPath_DragDrop(object sender, DragEventArgs e)
         {
             string[] files = e.Data.GetData(DataFormats.FileDrop) as string[]; // get all files droppeds  
@@ -48,6 +60,7 @@ namespace FindMyID
                 tbPath.Text = files.First(); //select the first one 
         }
 
+        //Drag & Drop for Main Form, not just text box
         private void MainForm_DragOver(object sender, DragEventArgs e)
         {
             tbPath_DragOver(sender, e);
@@ -61,16 +74,17 @@ namespace FindMyID
         private void btnStart_Click(object sender, EventArgs e)
         {
             //Check if Path is Valid
-            if (tbPath.Text != "" || !Uri.IsWellFormedUriString(tbPath.Text, UriKind.Absolute))
+            if (!string.IsNullOrWhiteSpace(tbPath.Text) || !Uri.IsWellFormedUriString(tbPath.Text, UriKind.Absolute))
             {
                 //Check if the extension is correct
-                if (System.IO.Path.GetExtension(tbPath.Text) == ".txt")
+                if (GetExtension(tbPath.Text) == ".txt")
                 {
                     progressBar.Value = 10;
                     Dictionary<string, string> processedData = documentHandler.ProcessData(tbPath.Text, tbRegex.Text);
                     if (processedData != null)
                     {
-                        foreach (var item in documentHandler.ProcessData(tbPath.Text, tbRegex.Text))
+                        //Output all AI predicted IDs 
+                        foreach (var item in processedData)
                         {
                             FindMyIDML.Model.ModelOutput result = documentHandler.PredictSubjectID(item.Value);
                             if (documentHandler.PredictSubjectID(item.Value).Prediction == "1")
@@ -88,7 +102,7 @@ namespace FindMyID
                 }
                 else
                 {
-                    MessageBox.Show("Dateien vom Typen \"" + System.IO.Path.GetExtension(tbPath.Text) + "\" werden nicht unterstützt");
+                    MessageBox.Show("Dateien vom Typen \"" + GetExtension(tbPath.Text) + "\" werden nicht unterstützt");
                 }
             }
             else
@@ -111,6 +125,28 @@ namespace FindMyID
                 UseShellExecute = true
             };
             Process.Start(psi);
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            // Create a MenuStrip control with a new window.
+            MenuStrip ms = new MenuStrip();
+            ToolStripMenuItem windowMenu = new ToolStripMenuItem("Admin");
+            ToolStripMenuItem windowNewMenu = new ToolStripMenuItem("Testdaten hinzufügen", null, new EventHandler(Admin_Click));
+            windowMenu.DropDownItems.Add(windowNewMenu);
+            ((ToolStripDropDownMenu)(windowMenu.DropDown)).ShowImageMargin = false;
+            ((ToolStripDropDownMenu)(windowMenu.DropDown)).ShowCheckMargin = true;
+            ms.MdiWindowListItem = windowMenu;
+            ms.Items.Add(windowMenu);
+            ms.Dock = DockStyle.Top;
+            this.MainMenuStrip = ms;
+            this.Controls.Add(ms);
+        }
+
+        private void Admin_Click(object sender, EventArgs e)
+        {
+            LoginForm loginForm = new LoginForm();
+            loginForm.Show();
         }
     }
 }

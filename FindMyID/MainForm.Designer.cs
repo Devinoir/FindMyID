@@ -46,7 +46,7 @@ namespace FindMyID
             // tbPath
             // 
             this.tbPath.AllowDrop = true;
-            this.tbPath.Location = new System.Drawing.Point(12, 78);
+            this.tbPath.Location = new System.Drawing.Point(12, 106);
             this.tbPath.Name = "tbPath";
             this.tbPath.Size = new System.Drawing.Size(667, 23);
             this.tbPath.TabIndex = 0;
@@ -56,7 +56,7 @@ namespace FindMyID
             // 
             // btnOpenDoc
             // 
-            this.btnOpenDoc.Location = new System.Drawing.Point(685, 78);
+            this.btnOpenDoc.Location = new System.Drawing.Point(685, 106);
             this.btnOpenDoc.Name = "btnOpenDoc";
             this.btnOpenDoc.Size = new System.Drawing.Size(87, 23);
             this.btnOpenDoc.TabIndex = 1;
@@ -66,7 +66,7 @@ namespace FindMyID
             // 
             // btnStart
             // 
-            this.btnStart.Location = new System.Drawing.Point(662, 241);
+            this.btnStart.Location = new System.Drawing.Point(662, 269);
             this.btnStart.Name = "btnStart";
             this.btnStart.Size = new System.Drawing.Size(108, 23);
             this.btnStart.TabIndex = 2;
@@ -76,7 +76,7 @@ namespace FindMyID
             // 
             // tbRegex
             // 
-            this.tbRegex.Location = new System.Drawing.Point(12, 175);
+            this.tbRegex.Location = new System.Drawing.Point(12, 203);
             this.tbRegex.Name = "tbRegex";
             this.tbRegex.Size = new System.Drawing.Size(473, 23);
             this.tbRegex.TabIndex = 3;
@@ -84,19 +84,20 @@ namespace FindMyID
             // 
             // btnCreateTrainingData
             // 
-            this.btnCreateTrainingData.Location = new System.Drawing.Point(588, 149);
+            this.btnCreateTrainingData.Location = new System.Drawing.Point(571, 170);
             this.btnCreateTrainingData.Name = "btnCreateTrainingData";
             this.btnCreateTrainingData.Size = new System.Drawing.Size(75, 23);
             this.btnCreateTrainingData.TabIndex = 4;
             this.btnCreateTrainingData.Text = "Testdaten erstellen";
             this.btnCreateTrainingData.UseVisualStyleBackColor = true;
+            this.btnCreateTrainingData.Visible = false;
             this.btnCreateTrainingData.Click += new System.EventHandler(this.btnCreateTrainingData_Click);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(12, 9);
+            this.label1.Location = new System.Drawing.Point(12, 37);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(125, 32);
             this.label1.TabIndex = 5;
@@ -105,7 +106,7 @@ namespace FindMyID
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 60);
+            this.label2.Location = new System.Drawing.Point(12, 88);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(401, 15);
             this.label2.TabIndex = 6;
@@ -114,7 +115,7 @@ namespace FindMyID
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 142);
+            this.label3.Location = new System.Drawing.Point(12, 170);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(482, 15);
             this.label3.TabIndex = 7;
@@ -124,7 +125,7 @@ namespace FindMyID
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(219, 157);
+            this.linkLabel1.Location = new System.Drawing.Point(219, 185);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(30, 15);
             this.linkLabel1.TabIndex = 8;
@@ -136,7 +137,7 @@ namespace FindMyID
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 157);
+            this.label4.Location = new System.Drawing.Point(12, 185);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(210, 15);
             this.label4.TabIndex = 9;
@@ -144,7 +145,7 @@ namespace FindMyID
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(12, 241);
+            this.progressBar.Location = new System.Drawing.Point(12, 269);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(644, 23);
             this.progressBar.TabIndex = 10;
@@ -154,7 +155,7 @@ namespace FindMyID
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(782, 279);
+            this.ClientSize = new System.Drawing.Size(782, 314);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.linkLabel1);
@@ -171,6 +172,7 @@ namespace FindMyID
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "FindMyID";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.MainForm_DragDrop);
             this.DragOver += new System.Windows.Forms.DragEventHandler(this.MainForm_DragOver);
             this.ResumeLayout(false);
